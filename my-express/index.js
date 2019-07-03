@@ -4,6 +4,7 @@ const Joi = require("joi"); //返回值为class
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded());
 
 //Midlleware
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 app.get("/api/courses", (req, res) => {
+  console.log("req.query", req.query);
   res.send(courses);
 });
 app.get("/api/courses/:id", (req, res) => {
@@ -43,11 +45,11 @@ app.get("/api/posts/:year/:month", (req, res) => {
 //POST
 app.post("/api/courses", (req, res) => {
   //可以使用npm-joi来进行验证
-  const { error } = validateCourse(req.body);
-  console.log(error); //result.error
-
-  if (error) {
-    res.status(400).send(error);
+  const result = validateCourse(req.body);
+  // const { error } = validateCourse(req.body);
+  console.log(result.error.details[0].message); //result.error
+  if (result.error) {
+    res.status(400).send(result.error.details[0].message);
     return;
   }
   // if (!req.body.name || req.body.name.length < 3) {
@@ -70,9 +72,10 @@ app.put("/api/courses/:id", (req, res) => {
   } else {
     res.send(course);
   }
-  const { error } = validateCourse(req.body);
-  if (error) {
-    res.status(400).send(error);
+  const result = validateCourse(req.body);
+  console.log(result.error.details[0].message); //result.error
+  if (result.error) {
+    res.status(400).send(result.error.details[0].message);
     return;
   }
 });
@@ -84,6 +87,7 @@ function validateCourse(course) {
       .required()
   };
   const result = Joi.validate(course, schema);
+  return result;
 }
 
 //manage the PORT
