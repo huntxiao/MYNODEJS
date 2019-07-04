@@ -4,9 +4,11 @@ const path = require("path");
 module.exports = {
   mode: "development",
   target: "node",
-  entry: "./test",
+  entry: {
+    test: "./test"
+  },
   output: {
-    filename: "pack.js",
+    filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist")
   }
 };
